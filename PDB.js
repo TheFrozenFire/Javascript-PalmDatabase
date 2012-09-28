@@ -126,7 +126,7 @@ PDB = function(pdbfile) {
 	}
 	
 	pdbproto.parsePDBTime = function(data) {
-		var value = this.binary.decodeInt(data, 32, false);
+		var value = this.binary.toDWord(data);
 	
 		var epochDifference = 2082844800;
 		var highBit = 2147483648;
