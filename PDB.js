@@ -1,12 +1,3 @@
-// Include BinaryParser
-if(typeof(BinaryParser) == "undefined") {
-	var head = document.getElementsByTagName("head")[0];
-	var BinaryParserScript = document.createElement("script");
-	BinaryParserScript.src = "binary-parser.js";
-	BinaryParserScript.type = "text/javascript";
-	head.appendChild(BinaryParserScript);
-}
-
 PDB = function(pdbfile) {
 	this.binary = new BinaryParser(true);
 	if(pdbfile) this.loadFile(pdbfile);
@@ -27,158 +18,40 @@ PDB = function(pdbfile) {
 	
 	pdbproto.records = [];
 	
-	pdbproto.types = {
-		".pdf" => {
-			name => "Adobe Reader",
-			app => "ADBE"
-		},
-		"TEXt" => {
-			name => "PalmDOC",
-			app => "REAd"
-		},
-		"BVok" => {
-			name => "BDicty",
-			app => "BDIC"
-		},
-		"DB99" => {
-			name => "DB (Database program)",
-			app => "DBOS"
-		},
-		"PNRd" => {
-			name => "eReader",
-			app => "PPrs"
-		},
-		"Data" => {
-			name => "eReader",
-			app => "PPrs"
-		},
-		"vIMG" => {
-			name => "FireViewer (ImageViewer)",
-			app => "View"
-		},
-		"HanD" => {
-			name => "w",
-			app => "Base"
-		},
-		"Info" => {
-			name => "PmDBPmDB",
-			app => "View"
-		}	"iSil" => {
-			name => "InfoINDB",
-			app => "o	To"
-		},
-		"iSil" => {
-			name => "GoToGo",
-			app => "o 3	"
-		},
-		"JFil" => {
-			name => "SDocSilX",
-			app => "e	Jb"
-		},
-		"JFil" => {
-			name => "DbJBas",
-			app => "e Pr"
-		},
-		"JfDb" => {
-			name => "o",
-			app => "JFil"
-		},
-		"DATA" => {
-			name => "LIST",
-			app => "LSdb"
-		},
-		"Mdb1" => {
-			name => "MobileDB",
-			app => "Mdb1"
-		},
-		"BOOK" => {
-			name => "MobiPocket",
-			app => "MOBI"
-		},
-		"Data" => {
-			name => "Plucker",
-			app => "Plkr"
-		},
-		"Data" => {
-			name => "QuickSheet",
-			app => "Sprd"
-		},
-		"SM01" => {
-			name => "SuperMemo",
-			app => "SMem"
-		},
-		"TEXt" => {
-			name => "TealDoc",
-			app => "TlDc"
-		},
-		"Info" => {
-			name => "TealInfo",
-			app => "TlIf"
-		},
-		"Data" => {
-			name => "TealMeal",
-			app => "TlMl"
-		},
-		"Data" => {
-			name => "TealPaint",
-			app => "TlPt"
-		},
-		"data" => {
-			name => "ThinkDB",
-			app => "TDBP"
-		},
-		"Tdat" => {
-			name => "Tides",
-			app => "Tide"
-		},
-		"ToRa" => {
-			name => "TomeRaider",
-			app => "TRPW"
-		},
-		"zTXT" => {
-			name => "Weasel",
-			app => "GPlm"
-		},
-		"BDOC" => {
-			name => "WordSmith",
-			app => "WrdS"
-		}
-	};
-	
 	pdbproto.attributesProto = function() {
 		return {
-			readonly => false,
-			dirtyappinfo => false,
-			backup => false,
-			overwrite => false,
-			reset => false,
-			nocopy => false
+			readonly : false,
+			dirtyappinfo : false,
+			backup : false,
+			overwrite : false,
+			reset : false,
+			nocopy : false
 		};
 	}
 	
 	pdbproto.attributeMasks = {
-		readonly => 0x0002,
-		dirtyappinfo => 0x0004,
-		backup => 0x0008,
-		overwrite => 0x0010,
-		reset => 0x0020,
-		nocopy => 0x0040
+		readonly : 0x0002,
+		dirtyappinfo : 0x0004,
+		backup : 0x0008,
+		overwrite : 0x0010,
+		reset : 0x0020,
+		nocopy : 0x0040
 	};
 	
 	pdbproto.recordAttributesProto = function() {
 		return {
-			secret => false,
-			busy => false,
-			dirty => false,
-			deleteOnSync => false
+			secret : false,
+			busy : false,
+			dirty : false,
+			deleteOnSync : false
 		};
 	}
 	
 	pdbproto.recordAttributeMasks = {
-		secret => 0x10,
-		busy => 0x20,
-		dirty => 0x40,
-		deleteOnSync => 0x80
+		secret : 0x10,
+		busy : 0x20,
+		dirty : 0x40,
+		deleteOnSync : 0x80
 	};
 	
 	pdbproto.loadFile = function(pdbfile) {
@@ -189,7 +62,7 @@ PDB = function(pdbfile) {
 		this.version = this.binary.toShort(file.read(2));
 		this.creationDate = this.parsePDBTime(file.read(4));
 		this.modificationDate = this.parsePDBTime(file.read(4));
-		this.lastBackupDate = this.parsePDBTime(file.read(4);
+		this.lastBackupDate = this.parsePDBTime(file.read(4));
 		this.modificationNumber = this.binary.toInt(file.read(4));
 		
 		var appInfoID = this.binary.toInt(file.read(4));
@@ -205,10 +78,10 @@ PDB = function(pdbfile) {
 		var record;
 		for(var i = 0; i < numRecords; i++) {
 			record = {
-				offset => this.binary.toInt(file.read(4)),
-				attributes => this.parseRecordAttribute(file.read(2)),
-				uniqueID => this.binary.toInt(file.read(3)),
-				data => undefined
+				offset : this.binary.toInt(file.read(4)),
+				attributes : this.parseRecordAttributes(file.read(2)),
+				uniqueID : this.binary.toInt(0x0+file.read(3)),
+				data : undefined
 			};
 			this.records.push(record);
 		}
@@ -220,7 +93,7 @@ PDB = function(pdbfile) {
 			file.rewind();
 			
 			start = this.records[i].offset;
-			if(this.records.length >= i+1) {
+			if(this.records[i+1] != undefined) {
 				end = this.records[i+1].offset;
 			} else {
 				end = file.length;
@@ -252,7 +125,7 @@ PDB = function(pdbfile) {
 		return attributes;
 	}
 	
-	pdbproto.parsePDBTime(data) {
+	pdbproto.parsePDBTime = function(data) {
 		var value = this.binary.decodeInt(data, 32, false);
 	
 		var epochDifference = 2082844800;

@@ -1,0 +1,32 @@
+<html>
+	<head>
+		<script type="text/javascript" src="binary-parser.js"></script>
+		<script type="text/javascript" src="StringStream.js"></script>
+		<script type="text/javascript" src="PDB.js"></script>
+		<script type="text/javascript">
+			function loadPDBFile(fileSelect) {
+				var reader = new FileReader();
+				
+				reader.onload = function(event) {
+					var pdb = new PDB(this.result);
+					var result = document.getElementById('result');
+					
+					result.innerHTML = pdb.name;
+				}
+				
+				reader.onerror = function(event) {
+					var result = document.getElementById('result');
+					result.innerHTML = this.error.toString();
+				}
+			
+				var file = fileSelect.files[0];
+				reader.readAsBinaryString(file);
+			}
+		</script>
+	</head>
+	<body>
+		<input type="file" id="pdbfile" name="file" />
+		<input type="submit" onclick="loadPDBFile(document.getElementById('pdbfile'))" value="Process PDB" />
+		<div id="result"></div>
+	</body>
+</html>
