@@ -202,8 +202,9 @@ PDB = function(pdbfile) {
 		
 		var numRecords = this.binary.toShort(file.read(2));
 		
+		var record;
 		for(var i = 0; i < numRecords; i++) {
-			var record = {
+			record = {
 				offset => this.binary.toInt(file.read(4)),
 				attributes => this.parseRecordAttribute(file.read(2)),
 				uniqueID => this.binary.toInt(file.read(3)),
@@ -212,11 +213,23 @@ PDB = function(pdbfile) {
 			this.records.push(record);
 		}
 		
-		if(file.read(2)) {
-			file.seek(-2); // if it's not two zero bytes, go back
+		var start;
+		var end;
+		var size;
+		for(var i = 0; i < this.records.length; i++) {
+			file.rewind();
+			
+			start = this.records[i].offset;
+			if(this.records.length >= i+1) {
+				end = this.records[i+1].offset;
+			} else {
+				end = file.length;
+			}
+			size = end - start;
+			
+			file.seek(start);
+			this.records[i].data = file.read(size);
 		}
-		
-		
 	}
 	
 	pdbproto.parseAttributes = function(attributesData) {
@@ -237,5 +250,20 @@ PDB = function(pdbfile) {
 				attributes[i] = true;
 		
 		return attributes;
+	}
+	
+	pdbproto.parsePDBTime(data) {
+		var value = this.binary.decodeInt(data, 32, false);
+	
+		var epochDifference = 2082844800;
+		var highBit = 2147483648;
+		
+		var isPDB = ((data & highBit) > 0);
+		
+		if(isPDB) {
+			value -= epochDifference
+		}
+		
+		return new Date(value * 1000);
 	}
 }
